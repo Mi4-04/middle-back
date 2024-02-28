@@ -9,6 +9,8 @@ import ormconfig from 'ormconfig';
 import { APP_FILTER } from '@nestjs/core';
 import { GlobalExceptionFilter } from './global-exeption-filter';
 import { TracksModule } from './tracks/tracks.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -25,8 +27,10 @@ import { TracksModule } from './tracks/tracks.module';
         'graphql-ws': true,
       },
     }),
+    AuthModule,
     PlaylistsModule,
     TracksModule,
+    UsersModule,
   ],
   providers: [
     {
