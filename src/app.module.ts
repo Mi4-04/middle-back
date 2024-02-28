@@ -6,6 +6,8 @@ import { ENV_SCHEMA } from './env-schema';
 import { PlaylistsModule } from './playlists/playlists.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import ormconfig from 'ormconfig';
+import { APP_FILTER } from '@nestjs/core';
+import { GlobalExceptionFilter } from './global-exeption-filter';
 
 @Module({
   imports: [
@@ -23,6 +25,12 @@ import ormconfig from 'ormconfig';
       },
     }),
     PlaylistsModule,
+  ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: GlobalExceptionFilter,
+    },
   ],
 })
 export class AppModule {}
