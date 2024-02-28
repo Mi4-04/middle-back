@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DEFAULT_PAGINATION } from 'src/contants';
+import { DEFAULT_PAGINATION } from 'src/shared/contants';
 import { Track } from 'src/entities/track.entity';
 import { Repository } from 'typeorm';
 import GetTracksByPlaylistInput from '../dto/get-tracks-by-playlist.input';
