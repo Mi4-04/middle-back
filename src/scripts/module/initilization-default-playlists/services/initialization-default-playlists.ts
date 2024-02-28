@@ -72,7 +72,11 @@ export default class InitializationDefaultPlaylistsService {
         );
 
         data.results.forEach((result) => {
-          const playlistName = result.name.trim().toLowerCase();
+          const playlistName = result.name
+            .trim()
+            .toLowerCase()
+            .replace('é', 'e');
+
           if (!newPlaylists.has(playlistName)) {
             const tracks = result.tracks.map(
               ({ id, artist_name, audio, image, name }) => {
@@ -120,7 +124,7 @@ export default class InitializationDefaultPlaylistsService {
       .andWhere('playlists.userId IS NULL')
       .getMany();
 
-    await await this.dataSource.manager.transaction(
+    await this.dataSource.manager.transaction(
       async (transactionEntityManager) => {
         await transactionEntityManager.remove(removedDefaultPlaylists, {
           chunk: 500,
