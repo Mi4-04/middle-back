@@ -8,6 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import ormconfig from 'ormconfig';
 import { APP_FILTER } from '@nestjs/core';
 import { GlobalExceptionFilter } from './global-exeption-filter';
+import { TracksModule } from './tracks/tracks.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { GlobalExceptionFilter } from './global-exeption-filter';
       },
     }),
     PlaylistsModule,
+    TracksModule,
   ],
   providers: [
     {

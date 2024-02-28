@@ -41,7 +41,7 @@ export class Track extends BaseEntity {
   imageUrl: string | null;
 
   @Column({ name: 'audio_url', type: 'varchar', nullable: false })
-  audioUrl: string | null;
+  audioUrl: string;
 
   @ManyToMany(() => Playlist, (playlists) => playlists.tracks)
   playlists: Playlist[];
