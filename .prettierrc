@@ -1,4 +1,13 @@
 {
   "singleQuote": true,
-  "trailingComma": "all"
+  "semi": false,
+  "printWidth": 120,
+  "arrowParens": "avoid",
+  "trailingComma": "none",
+  "importOrder": ["^[./]"],
+  "importOrderParserPlugins": [
+    "typescript",
+    "[\"decorators-legacy\", {\"decoratorsBeforeExport\": true}]"
+  ],
+  "organizeImportsSkipDestructiveCodeActions": true
 }

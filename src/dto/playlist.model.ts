@@ -1,13 +1,14 @@
-import { Field, ObjectType } from '@nestjs/graphql';
+import { Field, ObjectType } from '@nestjs/graphql'
+import TrackModel from './track.model'
 
 @ObjectType('Playlist', { isAbstract: true })
 export default class PlaylistModel {
   @Field()
-  id: string;
+  id: string
 
   @Field()
-  name: string;
+  name: string
 
   @Field(() => String, { nullable: true })
-  imageUrl: string | null;
+  imageUrl: string | null
 }
