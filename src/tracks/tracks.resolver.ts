@@ -1,16 +1,31 @@
-import { Args, Query, Resolver } from '@nestjs/graphql';
-import GetTracksByPlaylistInput from './dto/get-tracks-by-playlist.input';
-import TracksOutput from './dto/tracks.output';
-import TrackCrudService from './services/track-crud';
+import { UseGuards } from '@nestjs/common'
+import { Args, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
+import TrackModel from 'src/dto/track.model'
+import { Track } from 'src/entities/track.entity'
+import { User } from 'src/entities/user.entity'
+import { CurrentUser } from 'src/shared/decorators/current-user.decorator'
+import { GqlAuthGuard } from 'src/shared/guards/gql-auth-guard'
+import GetTracksByPlaylistInput from './dto/get-tracks-by-playlist.input'
+import TracksOutput from './dto/tracks.output'
+import TrackCrudService from './services/track-crud'
 
-@Resolver()
+@Resolver(() => TrackModel)
 export default class TracksResolver {
   constructor(private readonly trackCrudService: TrackCrudService) {}
 
   @Query(() => TracksOutput)
-  async getTracksByPlaylist(
-    @Args('query') query: GetTracksByPlaylistInput,
-  ): Promise<TracksOutput> {
-    return this.trackCrudService.getTracksByPlaylist(query);
+  async getTracksForGuest(@Args('query') query: GetTracksByPlaylistInput): Promise<TracksOutput> {
+    return this.trackCrudService.getTracks(query)
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Query(() => TracksOutput)
+  async getTracks(@Args('query') query: GetTracksByPlaylistInput, @CurrentUser() { id }: User): Promise<TracksOutput> {
+    return this.trackCrudService.getTracks(query, id)
+  }
+
+  @ResolveField(() => Boolean)
+  available(@Parent() { audioUrl }: Track): boolean {
+    return audioUrl !== '' ? true : false
   }
 }
