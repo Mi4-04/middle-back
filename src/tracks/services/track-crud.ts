@@ -35,31 +35,60 @@ export default class TrackCrudService {
 
   async getTracks(query: GetTracksByPlaylistInput, userId?: string): Promise<TracksOutput> {
     const { playlistId, pagination = { limit: 25, offset: 0 }, search } = query
-    const { limit, offset } = pagination
+    const { offset } = pagination
 
-    const { tracks: tracksFromAPI, count: tracksFromAPICount } = await this.getTracksFromAPI(pagination, search)
+    let externalTracks: Track[] = []
+    let externalTracksCount: number = 0
+    if (playlistId == null) {
+      const { tracks: tracksFromAPI, count: tracksFromAPICount } = await this.getTracksFromAPI(pagination, search)
+      externalTracks = [...tracksFromAPI]
+      externalTracksCount = tracksFromAPICount
+    }
+
+    if (externalTracksCount === 0) pagination.limit = 50
 
     if (userId != null) {
       const queryBuilder = this.trackRepository
         .createQueryBuilder('tracks')
         .leftJoin('tracks.playlists', 'playlists')
-        .andWhere('playlists.userId = :userId', { userId })
+        .andWhere('(playlists.userId = :userId OR playlists.userId IS NULL)', { userId })
 
       if (playlistId != null) queryBuilder.andWhere('playlists.id = :playlistId', { playlistId })
 
-      if (search != null)
+      if (search != null && search !== '')
         queryBuilder.andWhere('(tracks.name ILIKE :search OR tracks.artist ILIKE :search)', { search: `%${search}%` })
 
       const [tracks, count] = await queryBuilder
         .skip(offset)
-        .take(limit)
+        .take(pagination.limit)
         .orderBy('tracks.createdAt', 'DESC')
         .getManyAndCount()
 
-      return { tracks: [...tracks, ...tracksFromAPI], count: count + tracksFromAPICount }
+      return { tracks: [...tracks, ...externalTracks], count: count + externalTracksCount }
     }
 
-    return { tracks: tracksFromAPI, count: tracksFromAPICount }
+    if (playlistId != null && userId == null) {
+      console.log({ playlistId, userId, offset, limit: pagination.limit })
+
+      const queryBuilder = this.trackRepository
+        .createQueryBuilder('tracks')
+        .leftJoin('tracks.playlists', 'playlists')
+        .andWhere('playlists.id = :playlistId', { playlistId })
+        .andWhere('playlists.userId IS NULL')
+
+      if (search != null && search !== '')
+        queryBuilder.andWhere('(tracks.name ILIKE :search OR tracks.artist ILIKE :search)', { search: `%${search}%` })
+
+      const [tracks, count] = await queryBuilder
+        .skip(offset)
+        .take(pagination.limit)
+        .orderBy('tracks.createdAt', 'DESC')
+        .getManyAndCount()
+
+      return { tracks, count }
+    }
+
+    return { tracks: externalTracks, count: externalTracksCount }
   }
 
   private async getTracksFromAPI(pagiantion: PaginationModel, search?: string): Promise<TracksOutput> {
