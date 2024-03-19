@@ -11,7 +11,7 @@ export default class UpdatePlaylistInput {
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  trackEntityId?: string
+  trackId?: string
 
   @Field(() => TrackInput, { nullable: true })
   @IsOptional()

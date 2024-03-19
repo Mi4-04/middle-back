@@ -5,7 +5,7 @@ import { IsNotEmpty, IsOptional } from 'class-validator'
 export default class TrackInput {
   @Field()
   @IsNotEmpty()
-  trackId: string
+  realId: string
 
   @Field()
   @IsNotEmpty()

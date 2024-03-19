@@ -6,7 +6,7 @@ export default class TrackModel {
   id?: string | null
 
   @Field()
-  trackId: string
+  realId: string
 
   @Field()
   name: string
