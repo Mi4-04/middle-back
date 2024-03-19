@@ -68,8 +68,6 @@ export default class TrackCrudService {
     }
 
     if (playlistId != null && userId == null) {
-      console.log({ playlistId, userId, offset, limit: pagination.limit })
-
       const queryBuilder = this.trackRepository
         .createQueryBuilder('tracks')
         .leftJoin('tracks.playlists', 'playlists')
@@ -101,7 +99,7 @@ export default class TrackCrudService {
     const { data }: { data: ResultTracks } = await axios.get(`${this.baseAPIUrl}/tracks/?${serializedParams}`)
 
     const tracks = data.results.map(({ id, artist_name, name, audio, image }) => {
-      return new Track({ trackId: id, name, artist: artist_name, audioUrl: audio, imageUrl: image })
+      return new Track({ realId: id, name, artist: artist_name, audioUrl: audio, imageUrl: image })
     })
 
     return { tracks, count: tracks.length }

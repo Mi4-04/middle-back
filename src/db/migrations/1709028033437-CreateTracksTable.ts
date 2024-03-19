@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm'
 
 export class CreateTracksTable1709028033437 implements MigrationInterface {
   private table = new Table({
@@ -8,55 +8,52 @@ export class CreateTracksTable1709028033437 implements MigrationInterface {
         name: 'id',
         type: 'uuid',
         isPrimary: true,
-        default: 'uuid_generate_v4()',
+        default: 'uuid_generate_v4()'
       },
       {
-        name: 'track_id',
+        name: 'real_id',
         type: 'varchar',
-        isNullable: true,
+        isNullable: false
       },
       {
         name: 'name',
         type: 'varchar',
-        isNullable: false,
+        isNullable: false
       },
       {
         name: 'artist',
         type: 'varchar',
-        isNullable: true,
+        isNullable: true
       },
       {
         name: 'image_url',
         type: 'varchar',
-        isNullable: true,
+        isNullable: true
       },
       {
         name: 'audio_url',
         type: 'varchar',
-        isNullable: false,
+        isNullable: false
       },
       {
         name: 'created_at',
         type: 'timestamp with time zone',
-        default: 'now()',
+        default: 'now()'
       },
       {
         name: 'updated_at',
         type: 'timestamp with time zone',
-        default: 'now()',
-      },
-    ],
-  });
+        default: 'now()'
+      }
+    ]
+  })
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.createTable(this.table);
-    await queryRunner.createIndex(
-      this.table,
-      new TableIndex({ name: 'track_index_name', columnNames: ['name'] }),
-    );
+    await queryRunner.createTable(this.table)
+    await queryRunner.createIndex(this.table, new TableIndex({ name: 'track_index_name', columnNames: ['name'] }))
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.dropTable(this.table, true, true, true);
+    await queryRunner.dropTable(this.table, true, true, true)
   }
 }
