@@ -58,7 +58,7 @@ export default class PlaylistCrudService {
 
     const playlistName = await this.getPlaylistName(name, userId)
 
-    const playlist = new Playlist({ name: playlistName })
+    const playlist = new Playlist({ name: playlistName, userId })
     await playlist.save()
 
     return await this.getPlaylists(userId)
@@ -124,6 +124,6 @@ export default class PlaylistCrudService {
     const foundPlaylistCount = await this.playlistRepository.count({ where: { name: ILike(`${name}%`), userId } })
     if (foundPlaylistCount === 0) return name
 
-    return `${name}(${foundPlaylistCount + 1})`
+    return `${name}(${foundPlaylistCount})`
   }
 }

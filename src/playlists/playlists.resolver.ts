@@ -25,6 +25,7 @@ export default class PlaylistsResolver {
   }
 
   @UseGuards(GqlAuthGuard)
+  @Mutation(() => PlaylistsOutput)
   async createPlaylist(
     @CurrentUser() { id }: User,
     @Args('input') input: CreatePlaylistInput
