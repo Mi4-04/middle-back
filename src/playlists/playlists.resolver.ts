@@ -43,9 +43,9 @@ export default class PlaylistsResolver {
   @Query(() => PlaylistsOutput)
   async getPlaylists(
     @CurrentUser() { id }: User,
-    @Args('trackId', { nullable: true }) trackId?: string
+    @Args('realId', { nullable: true }) realId?: string
   ): Promise<PlaylistsOutput> {
-    return this.playlistCrudService.getPlaylists(id, trackId)
+    return this.playlistCrudService.getPlaylists(id, realId)
   }
 
   @UseGuards(GqlAuthGuard)
