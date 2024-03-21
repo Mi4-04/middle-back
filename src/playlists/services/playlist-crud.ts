@@ -22,19 +22,19 @@ export default class PlaylistCrudService {
     private readonly userRepositroy: Repository<User>
   ) {}
 
-  async getPlaylists(userId: string, trackId?: string): Promise<PlaylistsOutput> {
+  async getPlaylists(userId: string, realId?: string): Promise<PlaylistsOutput> {
     const queryBuilder = this.playlistRepository
       .createQueryBuilder('playlists')
       .andWhere('playlists.userId = :userId', { userId })
 
-    if (trackId != null) {
+    if (realId != null) {
       const subquery = this.playlistRepository
         .createQueryBuilder('subplaylists')
         .innerJoin('subplaylists.tracks', 'subtracks')
-        .where('subtracks.id = :trackId', { trackId })
+        .where('subtracks.realId = :realId', { realId })
         .select('subplaylists.id')
 
-      queryBuilder.andWhere('playlists.id NOT IN (' + subquery.getQuery() + ')', { trackId })
+      queryBuilder.andWhere('playlists.id NOT IN (' + subquery.getQuery() + ')', { realId })
     }
 
     const playlists = await queryBuilder.getMany()
@@ -76,7 +76,7 @@ export default class PlaylistCrudService {
 
       if (foundPlaylist == null) throw new PlaylistNotFoundError('Playlist not found error')
 
-      if (trackId == null) {
+      if (trackId != null) {
         const filteredTracks = foundPlaylist.tracks.filter(track => track.id !== trackId)
 
         foundPlaylist.tracks = filteredTracks
