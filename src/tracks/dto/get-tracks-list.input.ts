@@ -3,7 +3,7 @@ import { IsOptional } from 'class-validator'
 import PaginationModel from 'src/dto/pagination.model'
 
 @InputType({ isAbstract: true })
-export default class GetTracksByPlaylistInput {
+export default class GetTrackListInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   playlistId?: string

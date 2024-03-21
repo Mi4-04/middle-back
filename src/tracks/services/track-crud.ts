@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Track } from 'src/entities/track.entity'
 import { Repository } from 'typeorm'
-import GetTracksByPlaylistInput from '../dto/get-tracks-by-playlist.input'
+import GetTrackListInput from '../dto/get-tracks-list.input'
 import TracksOutput from '../dto/tracks.output'
 import { ConfigService } from '@nestjs/config'
 import PaginationModel from 'src/dto/pagination.model'
@@ -33,7 +33,7 @@ export default class TrackCrudService {
   private readonly baseAPIUrl = this.configService.get('BASE_MUSIC_API_URL') as string
   private readonly formatResponse = 'json'
 
-  async getTracks(query: GetTracksByPlaylistInput, userId?: string): Promise<TracksOutput> {
+  async getTracks(query: GetTrackListInput, userId?: string): Promise<TracksOutput> {
     const { playlistId, pagination = { limit: 25, offset: 0 }, search } = query
     const { offset } = pagination
 

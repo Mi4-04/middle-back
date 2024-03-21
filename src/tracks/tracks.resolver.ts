@@ -5,7 +5,7 @@ import { Track } from 'src/entities/track.entity'
 import { User } from 'src/entities/user.entity'
 import { CurrentUser } from 'src/shared/decorators/current-user.decorator'
 import { GqlAuthGuard } from 'src/shared/guards/gql-auth-guard'
-import GetTracksByPlaylistInput from './dto/get-tracks-by-playlist.input'
+import GetTrackListInput from './dto/get-tracks-list.input'
 import TracksOutput from './dto/tracks.output'
 import TrackCrudService from './services/track-crud'
 
@@ -14,13 +14,13 @@ export default class TracksResolver {
   constructor(private readonly trackCrudService: TrackCrudService) {}
 
   @Query(() => TracksOutput)
-  async getTracksForGuest(@Args('query') query: GetTracksByPlaylistInput): Promise<TracksOutput> {
+  async getTracksForGuest(@Args('query') query: GetTrackListInput): Promise<TracksOutput> {
     return this.trackCrudService.getTracks(query)
   }
 
   @UseGuards(GqlAuthGuard)
   @Query(() => TracksOutput)
-  async getTracks(@Args('query') query: GetTracksByPlaylistInput, @CurrentUser() { id }: User): Promise<TracksOutput> {
+  async getTracks(@Args('query') query: GetTrackListInput, @CurrentUser() { id }: User): Promise<TracksOutput> {
     return this.trackCrudService.getTracks(query, id)
   }
 

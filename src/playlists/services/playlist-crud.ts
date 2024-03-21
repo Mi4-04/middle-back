@@ -67,10 +67,9 @@ export default class PlaylistCrudService {
   async updatePlaylist(userId: string, input: UpdatePlaylistInput): Promise<StatusOutput> {
     try {
       const { playlistId, trackId, track } = input
-      const { realId, artist, audioUrl, imageUrl, name } = track
 
       const foundPlaylist = await this.playlistRepository.findOne({
-        where: { id: playlistId, userId, tracks: { id: trackId } },
+        where: { id: playlistId, userId },
         relations: ['tracks']
       })
 
@@ -78,10 +77,11 @@ export default class PlaylistCrudService {
 
       if (trackId != null) {
         const filteredTracks = foundPlaylist.tracks.filter(track => track.id !== trackId)
-
         foundPlaylist.tracks = filteredTracks
         await foundPlaylist.save()
       } else {
+        const { realId, artist, audioUrl, imageUrl, name } = track
+
         const foundTrackInCurrentPlaylist = foundPlaylist.tracks.find(item => item.realId === realId)
         if (foundTrackInCurrentPlaylist != null)
           throw new TrackAlreadyExistInPlaylistError('Track already exist in playlist')
