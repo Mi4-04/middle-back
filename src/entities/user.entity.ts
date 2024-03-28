@@ -5,27 +5,27 @@ import {
   Entity,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import { Playlist } from './playlist.entity';
+  UpdateDateColumn
+} from 'typeorm'
+import { Playlist } from './playlist.entity'
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id: string
 
   @Column({ name: 'email', unique: true, nullable: false, type: 'varchar' })
-  email: string;
+  email: string
 
   @Column({ name: 'password', nullable: false, type: 'varchar' })
-  password: string;
+  password: string
 
-  @OneToMany(() => Playlist, (playlists) => playlists.user, { cascade: true })
-  playlists: Playlist[];
+  @OneToMany(() => Playlist, playlists => playlists.user, { cascade: true })
+  playlists: Playlist[]
 
   @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  createdAt: Date
 
   @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
+  updatedAt: Date
 }

@@ -1,4 +1,4 @@
-import { ValidationError as CoreValidationError } from 'class-validator'
+import { type ValidationError as CoreValidationError } from 'class-validator'
 
 export class BaseException extends Error {
   constructor(
