@@ -26,6 +26,7 @@ export class Playlist extends BaseEntity {
     super()
     Object.assign(this, params)
   }
+
   @PrimaryGeneratedColumn('uuid')
   id: string
 

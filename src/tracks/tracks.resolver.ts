@@ -26,6 +26,6 @@ export default class TracksResolver {
 
   @ResolveField(() => Boolean)
   available(@Parent() { audioUrl }: Track): boolean {
-    return audioUrl !== '' ? true : false
+    return audioUrl !== ''
   }
 }

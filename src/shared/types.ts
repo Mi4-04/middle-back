@@ -1,6 +1,6 @@
 export type AuthTokenPayload = {
-  email: string;
-  exp: number;
-  iat: number;
-  id: string;
-};
+  email: string
+  exp: number
+  iat: number
+  id: string
+}

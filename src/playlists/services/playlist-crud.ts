@@ -79,7 +79,7 @@ export default class PlaylistCrudService {
         const filteredTracks = foundPlaylist.tracks.filter(track => track.id !== trackId)
         foundPlaylist.tracks = filteredTracks
         await foundPlaylist.save()
-      } else {
+      } else if (track != null) {
         const { realId, artist, audioUrl, imageUrl, name } = track
 
         const foundTrackInCurrentPlaylist = foundPlaylist.tracks.find(item => item.realId === realId)

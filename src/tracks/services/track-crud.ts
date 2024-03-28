@@ -29,8 +29,8 @@ export default class TrackCrudService {
     private readonly configService: ConfigService
   ) {}
 
-  private readonly clientId = this.configService.get('CLIENT_ID') as string
-  private readonly baseAPIUrl = this.configService.get('BASE_MUSIC_API_URL') as string
+  private readonly clientId = this.configService.get('CLIENT_ID')
+  private readonly baseAPIUrl = this.configService.get('BASE_MUSIC_API_URL')
   private readonly formatResponse = 'json'
 
   async getTracks(query: GetTrackListInput, userId?: string): Promise<TracksOutput> {

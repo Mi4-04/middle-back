@@ -33,10 +33,11 @@ export default class InitializationDefaultPlaylistsService {
     @InjectRepository(Track)
     private readonly trackRepositroy: Repository<Track>
   ) {}
+
   private readonly limit = '150'
   private readonly formatResponse = 'json'
-  private readonly clientId = this.configService.get('CLIENT_ID') as string
-  private readonly baseAPIUrl = this.configService.get('BASE_MUSIC_API_URL') as string
+  private readonly clientId = this.configService.get('CLIENT_ID')
+  private readonly baseAPIUrl = this.configService.get('BASE_MUSIC_API_URL')
 
   async process(): Promise<void> {
     const defaultPlaylistNames = [
@@ -82,7 +83,7 @@ export default class InitializationDefaultPlaylistsService {
             const playlist = new Playlist({ name: playlistName, tracks })
             newPlaylists.set(playlistName, playlist)
           } else {
-            const playlist = newPlaylists.get(playlistName)
+            const playlist = newPlaylists.get(playlistName) as Playlist
             const tracks = result.tracks.map(({ id, name, artist_name, audio, image }) => {
               return new Track({
                 realId: id,

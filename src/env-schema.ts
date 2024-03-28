@@ -1,4 +1,4 @@
-import * as Joi from 'joi';
+import * as Joi from 'joi'
 
 export const ENV_SCHEMA = Joi.object({
   DATABASE_URL: Joi.string(),
@@ -8,5 +8,5 @@ export const ENV_SCHEMA = Joi.object({
   BASE_MUSIC_API_URL: Joi.string(),
   JWT_SECRET: Joi.string(),
   USER_AUTH_TOKEN_KEY: Joi.string(),
-  FRONTEND_URL: Joi.string().default('http://localhost:3000'),
-});
+  FRONTEND_URL: Joi.string().default('http://localhost:3000')
+})

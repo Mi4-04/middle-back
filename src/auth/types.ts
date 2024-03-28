@@ -1,3 +1,3 @@
-import { Context } from 'src/shared/utils/token-handler';
+import { type Context } from 'src/shared/utils/token-handler'
 
-export type ContextType = Context;
+export type ContextType = Context
