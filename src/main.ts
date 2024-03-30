@@ -6,6 +6,7 @@ import { type ValidationError as CoreValidationError } from 'class-validator'
 import { ValidationError } from './shared/errors'
 import { ValidationPipe } from '@nestjs/common'
 import * as cookieParser from 'cookie-parser'
+import * as bonjour from 'bonjour'
 import 'dotenv/config'
 
 async function bootstrap() {
@@ -30,6 +31,14 @@ async function bootstrap() {
 
   const currentPort = configService.get<number>('PORT') as number
   const host = configService.get<string>('BACKEND_URL')
+  const localAddress = configService.get('LOCAL_ADDRESS') as string | undefined
+
+  const bonjourInstance = bonjour()
+  bonjourInstance.publish({ name: 'nest-app', host: localAddress, type: 'http', port: currentPort })
+  bonjourInstance.find({ type: 'http' }, function (service) {
+    console.log('Found an HTTP server:', service)
+  })
+
   await app.listen(currentPort)
   console.log(`The graphql sandbox is available at: ${host}:${currentPort}/graphql`)
 }
