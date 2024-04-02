@@ -1,14 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import { InjectRepository } from '@nestjs/typeorm'
-import CurrentUserOutput from 'src/dto/current-user.output'
 import { User } from 'src/entities/user.entity'
 import { IncorrectPasswordError, UserNotFoundError } from 'src/shared/errors'
-import { Context, tokenSetter } from 'src/shared/utils/token-handler'
 import { Repository } from 'typeorm'
 import AuthInput from '../dto/auth.input'
 import { compare } from 'bcrypt'
+import AuthOutput from '../dto/auth.output'
 
 @Injectable()
 export default class SignInService {
@@ -16,13 +14,10 @@ export default class SignInService {
   constructor(
     @InjectRepository(User)
     private readonly userRepositroy: Repository<User>,
-    private readonly configService: ConfigService,
     private readonly jwtService: JwtService
   ) {}
 
-  private readonly userAuthTokenKey = this.configService.get('USER_AUTH_TOKEN_KEY')
-
-  async process(input: AuthInput, context: Context): Promise<CurrentUserOutput> {
+  async process(input: AuthInput): Promise<AuthOutput> {
     try {
       const { email, password } = input
 
@@ -32,17 +27,12 @@ export default class SignInService {
       if (!(await compare(password, user.password))) throw new IncorrectPasswordError('Incorrect password')
 
       const payload = { id: user.id, email: user.email }
-      tokenSetter(context, this.userAuthTokenKey, this.jwtService.sign(payload))
+      const token = this.jwtService.sign(payload)
 
-      return { currentUser: user }
+      return { token }
     } catch (err) {
       this.logger.error(`Server error: `, err)
       throw err
     }
-  }
-
-  async signOut(context: Context): Promise<CurrentUserOutput> {
-    tokenSetter(context, this.userAuthTokenKey, '')
-    return { currentUser: undefined }
   }
 }

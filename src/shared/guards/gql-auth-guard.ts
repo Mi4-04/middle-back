@@ -1,21 +1,30 @@
-import { Injectable, ExecutionContext } from '@nestjs/common'
+import { Injectable, ExecutionContext, CanActivate } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 import { GqlExecutionContext } from '@nestjs/graphql'
-import { AuthGuard } from '@nestjs/passport'
-import { Request } from 'express'
 import { AuthTokenError } from 'src/shared/errors'
-import { USER_PASSPORT_STRATEGY_NAME } from '../contants'
+import * as jwt from 'jsonwebtoken'
 
 @Injectable()
-export class GqlAuthGuard extends AuthGuard(USER_PASSPORT_STRATEGY_NAME) {
-  getRequest(context: ExecutionContext): Request {
-    const ctx = GqlExecutionContext.create(context)
-    return ctx.getContext().req
+export class GqlAuthGuard implements CanActivate {
+  constructor(private readonly configService: ConfigService) {}
+  private readonly jwtSecret = this.configService.get('JWT_SECRET') as string
+
+  canActivate(context: ExecutionContext): boolean {
+    const ctx = GqlExecutionContext.create(context).getContext().req
+    if (!ctx.headers.authorization) return false
+
+    ctx.user = this.validateToken(ctx.headers.authorization)
+    return true
   }
 
-  handleRequest<User>(err, user, info, context, status): User {
-    if (err != null || user === false) {
+  validateToken(auth: string) {
+    if (auth.split(' ')[0] !== 'Bearer') throw new AuthTokenError('Invalid token')
+
+    const token = auth.split(' ')[1]
+    try {
+      return jwt.verify(token, this.jwtSecret)
+    } catch (err) {
       throw new AuthTokenError('Invalid payload')
     }
-    return user
   }
 }

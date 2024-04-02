@@ -1,9 +1,8 @@
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql'
-import CurrentUserOutput from 'src/dto/current-user.output'
+import { Args, Mutation, Resolver } from '@nestjs/graphql'
 import AuthInput from './dto/auth.input'
+import AuthOutput from './dto/auth.output'
 import SignInService from './services/sign-in'
 import SignUpService from './services/sign-up'
-import { ContextType } from './types'
 
 @Resolver()
 export default class AuthResolver {
@@ -12,18 +11,13 @@ export default class AuthResolver {
     private readonly signInService: SignInService
   ) {}
 
-  @Mutation(() => CurrentUserOutput)
-  async signUp(@Args('input') input: AuthInput, @Context() context: ContextType): Promise<CurrentUserOutput> {
-    return this.signUpService.process(input, context)
+  @Mutation(() => AuthOutput)
+  async signUp(@Args('input') input: AuthInput): Promise<AuthOutput> {
+    return this.signUpService.process(input)
   }
 
-  @Mutation(() => CurrentUserOutput)
-  async signIn(@Args('input') input: AuthInput, @Context() context: ContextType): Promise<CurrentUserOutput> {
-    return this.signInService.process(input, context)
-  }
-
-  @Mutation(() => CurrentUserOutput)
-  async signOut(@Context() context: ContextType): Promise<CurrentUserOutput> {
-    return this.signInService.signOut(context)
+  @Mutation(() => AuthOutput)
+  async signIn(@Args('input') input: AuthInput): Promise<AuthOutput> {
+    return this.signInService.process(input)
   }
 }
