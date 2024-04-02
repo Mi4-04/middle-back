@@ -5,7 +5,6 @@ import { GlobalExceptionFilter } from './global-exeption-filter'
 import { type ValidationError as CoreValidationError } from 'class-validator'
 import { ValidationError } from './shared/errors'
 import { ValidationPipe } from '@nestjs/common'
-import * as cookieParser from 'cookie-parser'
 import * as bonjour from 'bonjour'
 import 'dotenv/config'
 
@@ -18,7 +17,6 @@ async function bootstrap() {
     credentials: true
   })
 
-  app.use(cookieParser())
   app.useGlobalFilters(new GlobalExceptionFilter())
   app.useGlobalPipes(
     new ValidationPipe({

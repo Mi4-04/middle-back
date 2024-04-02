@@ -4,21 +4,19 @@ import { PassportStrategy } from '@nestjs/passport'
 import { InjectRepository } from '@nestjs/typeorm'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { User } from 'src/entities/user.entity'
-import { USER_PASSPORT_STRATEGY_NAME } from 'src/shared/contants'
 import { AuthTokenError } from 'src/shared/errors'
 import { AuthTokenPayload } from 'src/shared/types'
-import { cookieExtractor } from 'src/shared/utils/cookie-extractor'
 import { Repository } from 'typeorm'
 
 @Injectable()
-export class JwtStratagy extends PassportStrategy(Strategy, USER_PASSPORT_STRATEGY_NAME) {
+export class JwtStratagy extends PassportStrategy(Strategy) {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     public readonly configService: ConfigService
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: configService.get('JWT_SECRET')
     })
