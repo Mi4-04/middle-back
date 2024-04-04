@@ -29,12 +29,18 @@ async function bootstrap() {
 
   const currentPort = configService.get<number>('PORT') as number
   const host = configService.get<string>('BACKEND_URL')
-  const localAddress = configService.get('LOCAL_ADDRESS') as string | undefined
 
   const bonjourInstance = bonjour()
-  bonjourInstance.publish({ name: 'nest-app', host: localAddress, type: 'http', port: currentPort })
-  bonjourInstance.find({ type: 'http' }, function (service) {
-    console.log('Found an HTTP server:', service)
+  bonjourInstance.publish({ name: 'nest-app', host: 'nest-app.local', type: 'http', port: currentPort })
+  bonjourInstance.find({ type: 'http', protocol: 'tcp' }, function (service) {
+    const {
+      name,
+      host: hostname,
+      referer: { address }
+    } = service
+    if (name === 'nest-app') {
+      console.log(`Add ${address} and ${hostname} in file /etc/hosts`)
+    }
   })
 
   await app.listen(currentPort)

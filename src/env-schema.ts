@@ -7,6 +7,5 @@ export const ENV_SCHEMA = Joi.object({
   CLIENT_ID: Joi.string(),
   BASE_MUSIC_API_URL: Joi.string(),
   JWT_SECRET: Joi.string(),
-  FRONTEND_URL: Joi.string().default('http://localhost:3000'),
-  LOCAL_ADDRESS: Joi.string()
+  FRONTEND_URL: Joi.string().default('http://localhost:3000')
 })
