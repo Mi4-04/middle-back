@@ -4,10 +4,8 @@ import { Track } from 'src/entities/track.entity'
 import { Repository } from 'typeorm'
 import GetTrackListInput from '../dto/get-tracks-list.input'
 import TracksOutput from '../dto/tracks.output'
-import { ConfigService } from '@nestjs/config'
 import PaginationModel from 'src/dto/pagination.model'
-import axios from 'axios'
-import { stringify } from 'qs'
+import MusicAPIService from 'src/music-api/services/music-api'
 
 type TrackItem = {
   id: string
@@ -22,30 +20,16 @@ type ResultTracks = {
 }
 
 @Injectable()
-export default class TrackCrudService {
+export default class GetTracksService {
   constructor(
     @InjectRepository(Track)
     private readonly trackRepository: Repository<Track>,
-    private readonly configService: ConfigService
+    private readonly musicAPIService: MusicAPIService
   ) {}
 
-  private readonly clientId = this.configService.get('CLIENT_ID')
-  private readonly baseAPIUrl = this.configService.get('BASE_MUSIC_API_URL')
-  private readonly formatResponse = 'json'
-
   async getTracks(query: GetTrackListInput, userId?: string): Promise<TracksOutput> {
-    const { playlistId, pagination = { limit: 25, offset: 0 }, search } = query
-    const { offset } = pagination
-
-    let externalTracks: Track[] = []
-    let externalTracksCount: number = 0
-    if (playlistId == null) {
-      const { tracks: tracksFromAPI, count: tracksFromAPICount } = await this.getTracksFromAPI(pagination, search)
-      externalTracks = [...tracksFromAPI]
-      externalTracksCount = tracksFromAPICount
-    }
-
-    if (externalTracksCount === 0) pagination.limit = 50
+    const { playlistId, pagination = { limit: 50, offset: 0 }, search } = query
+    const { offset, limit } = pagination
 
     if (userId != null) {
       const queryBuilder = this.trackRepository
@@ -60,11 +44,11 @@ export default class TrackCrudService {
 
       const [tracks, count] = await queryBuilder
         .skip(offset)
-        .take(pagination.limit)
+        .take(limit)
         .orderBy('tracks.createdAt', 'DESC')
         .getManyAndCount()
 
-      return { tracks: [...tracks, ...externalTracks], count: count + externalTracksCount }
+      return { tracks, count }
     }
 
     if (playlistId != null && userId == null) {
@@ -79,24 +63,20 @@ export default class TrackCrudService {
 
       const [tracks, count] = await queryBuilder
         .skip(offset)
-        .take(pagination.limit)
+        .take(limit)
         .orderBy('tracks.createdAt', 'DESC')
         .getManyAndCount()
 
       return { tracks, count }
     }
 
-    return { tracks: externalTracks, count: externalTracksCount }
+    const { tracks: tracksFromAPI, count: countFromAPITracks } = await this.getTracksFromAPI(pagination, search)
+    return { tracks: tracksFromAPI, count: countFromAPITracks }
   }
 
   private async getTracksFromAPI(pagiantion: PaginationModel, search?: string): Promise<TracksOutput> {
-    const { limit, offset } = pagiantion
-
-    const baseParams = { client_id: this.clientId, format: this.formatResponse, limit, offset }
-    const params = { ...baseParams, search }
-
-    const serializedParams = stringify(params, { skipNulls: true })
-    const { data }: { data: ResultTracks } = await axios.get(`${this.baseAPIUrl}/tracks/?${serializedParams}`)
+    const params = { ...pagiantion, search }
+    const data: ResultTracks = await this.musicAPIService.get(`/tracks`, { ...params })
 
     const tracks = data.results.map(({ id, artist_name, name, audio, image }) => {
       return new Track({ realId: id, name, artist: artist_name, audioUrl: audio, imageUrl: image })

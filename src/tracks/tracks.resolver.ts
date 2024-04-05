@@ -7,21 +7,21 @@ import { CurrentUser } from 'src/shared/decorators/current-user.decorator'
 import { GqlAuthGuard } from 'src/shared/guards/gql-auth-guard'
 import GetTrackListInput from './dto/get-tracks-list.input'
 import TracksOutput from './dto/tracks.output'
-import TrackCrudService from './services/track-crud'
+import GetTracksService from './services/get-tracks'
 
 @Resolver(() => TrackModel)
 export default class TracksResolver {
-  constructor(private readonly trackCrudService: TrackCrudService) {}
+  constructor(private readonly getTracksService: GetTracksService) {}
 
   @Query(() => TracksOutput)
   async getTracksForGuest(@Args('query') query: GetTrackListInput): Promise<TracksOutput> {
-    return this.trackCrudService.getTracks(query)
+    return this.getTracksService.getTracks(query)
   }
 
   @UseGuards(GqlAuthGuard)
   @Query(() => TracksOutput)
   async getTracks(@Args('query') query: GetTrackListInput, @CurrentUser() { id }: User): Promise<TracksOutput> {
-    return this.trackCrudService.getTracks(query, id)
+    return this.getTracksService.getTracks(query, id)
   }
 
   @ResolveField(() => Boolean)

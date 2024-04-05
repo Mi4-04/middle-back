@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm'
-import axios from 'axios'
 import { Playlist } from 'src/entities/playlist.entity'
 import { Track } from 'src/entities/track.entity'
+import MusicAPIService from 'src/music-api/services/music-api'
 import { DataSource, IsNull, Repository } from 'typeorm'
 
 type TrackValue = {
@@ -27,17 +26,14 @@ type PlaylistsResults = {
 export default class InitializationDefaultPlaylistsService {
   constructor(
     @InjectDataSource() private dataSource: DataSource,
-    private readonly configService: ConfigService,
     @InjectRepository(Playlist)
     private readonly playlistRepository: Repository<Playlist>,
     @InjectRepository(Track)
-    private readonly trackRepositroy: Repository<Track>
+    private readonly trackRepositroy: Repository<Track>,
+    private readonly musicAPIService: MusicAPIService
   ) {}
 
   private readonly limit = '150'
-  private readonly formatResponse = 'json'
-  private readonly clientId = this.configService.get('CLIENT_ID')
-  private readonly baseAPIUrl = this.configService.get('BASE_MUSIC_API_URL')
 
   async process(): Promise<void> {
     const defaultPlaylistNames = [
@@ -58,14 +54,9 @@ export default class InitializationDefaultPlaylistsService {
 
     await Promise.all(
       defaultPlaylistNames.map(async name => {
-        const params = {
-          client_id: this.clientId,
-          format: this.formatResponse,
-          name,
-          limit: this.limit
-        }
+        const params = { name, limit: this.limit }
 
-        const { data }: { data: PlaylistsResults } = await axios.get(`${this.baseAPIUrl}/playlists/tracks`, { params })
+        const data: PlaylistsResults = await this.musicAPIService.get(`/playlists/tracks`, { ...params })
 
         data.results.forEach(result => {
           const playlistName = result.name.trim().toLowerCase().replace('é', 'e')

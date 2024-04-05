@@ -10,6 +10,7 @@ import { APP_FILTER } from '@nestjs/core'
 import { GlobalExceptionFilter } from './global-exeption-filter'
 import { TracksModule } from './tracks/tracks.module'
 import { AuthModule } from './auth/auth.module'
+import { MusicAPIModule } from './music-api/music-api.module'
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { AuthModule } from './auth/auth.module'
       }
     }),
     AuthModule,
+    MusicAPIModule,
     PlaylistsModule,
     TracksModule
   ],
